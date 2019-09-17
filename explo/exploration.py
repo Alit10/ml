@@ -118,18 +118,17 @@ def plot_freq_target(df,col_plot,target,cat,nb):
     plt.show()
     return df_temp
 
-    def plot_freq_modalit(df,col,target,cat):
-        if cat == 0:
-            df["col"] = pd.qcut(df[col], nb,duplicates="drop",precision=1)
-            df["freq"] = 1
-        df_counts = (df.groupby([col])[target]
-                     .value_counts(normalize=True)
-                     .rename('percentage')
-                     .mul(100)
-                     .reset_index())
-        p = sns.barplot(x=col, y="percentage", hue= target, data=df )
-        return p
-
+def plot_freq_modalit(df,col,target,cat):
+    if cat == 0:
+        df["col"] = pd.qcut(df[col], nb,duplicates="drop",precision=1)
+        df["freq"] = 1
+    df_counts = (df.groupby([col])[target]
+                 .value_counts(normalize=True)
+                 .rename('percentage')
+                 .mul(100)
+                 .reset_index())
+    p = sns.barplot(x=col, y="percentage", hue= target, data=df_counts )
+    return p
 
 
 
