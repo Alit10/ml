@@ -1,3 +1,4 @@
+
 """
 @author = Ali 
 date = 21-05-2019
@@ -7,6 +8,7 @@ import numpy as np
 import scipy.stats as ss
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.decomposition import PCA
 
 def summary(df,max_number_occ = 100):
     """
@@ -76,7 +78,61 @@ def cramer_correlations(df,l_var):
     sns.heatmap(results, annot=True, ax=ax, cmap="YlGnBu", linewidths=0.1)
     return results
  
+def pca_representation(X,y,n_comp):
+    pca = PCA(n_components=n_comp)
+    X1 = pca.fit_transform(X)
+    def plot_2d_space(X, y, label='Classes'):   
+        colors = ['#1F77B4', '#FF7F0E']
+        markers = ['o', 's']
+        for l, c, m in zip(np.unique(y), colors, markers):
+            plt.scatter(
+                X[y==l, 0],
+                X[y==l, 1],
+                c=c, label=l, marker=m
+            )
+        plt.title(label)
+        plt.legend(loc='upper right')
+        plt.show()
+    plot_2d_space(X1, y, 'Imbalanced dataset (2 PCA components)')
+    return "ok"
+
+
+def plot_freq_target(df,col_plot,target,cat,nb):
+    """
+    function useful in the case of a binary classification help us see the percentage of positive for each group
     
+    """
+    if cat == 0:
+        df["temp"] = pd.qcut(df[col_plot], nb,duplicates="drop",precision=1)
+        df["freq"] = 1
+        df_temp = df.groupby("temp").agg({target:"mean",
+                                         "freq":"count"}).reset_index()
+    if cat ==1:
+        df_temp = df.groupby(col_plot).agg({target:"mean",
+                                         "freq":"count"}).reset_index()
+    fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(14,10))
+    sns.catplot(x=col_plot, y=target,kind="bar",data=df_temp,ax=ax[0])
+    sns.catplot(x=col_plot, y="freq",kind="bar",data=df_temp,ax=ax[1])
+    plt.close()
+    plt.close()
+    plt.show()
+    return df_temp
+
+    def plot_freq_modalit(df,col,target,cat):
+        if cat == 0:
+            df["col"] = pd.qcut(df[col], nb,duplicates="drop",precision=1)
+            df["freq"] = 1
+        df_counts = (df.groupby([col])[target]
+                     .value_counts(normalize=True)
+                     .rename('percentage')
+                     .mul(100)
+                     .reset_index())
+        p = sns.barplot(x=col, y="percentage", hue= target, data=df )
+        return p
+
+
+
+
 
 if __name__ =="main":
     df = pd.read_csv("Xy_Train_2.csv",sep=";")
