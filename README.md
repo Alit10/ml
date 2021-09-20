@@ -1,4 +1,4 @@
-# **Machine Learning repo**
+# **Machine Learning repo for classification**
 
 
 This repository contains some machine leanring helpers functions
